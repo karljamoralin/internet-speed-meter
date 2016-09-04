@@ -8,15 +8,34 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.NotificationCompat;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpeedMeterMethods{
+
+    private Thread mSpeedMeterThread;
+    private Handler mHandler;
+    private TextView downloadSpeedOutput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        downloadSpeedOutput = (TextView) findViewById(R.id.speed);
+
+        mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                SpeedMeter speedMeter = (SpeedMeter) inputMessage.obj;
+                downloadSpeedOutput.setText(Long.toString(speedMeter.getmDownloadSpeedKB()));
+            }
+        };
+
+        SpeedMeter speedMeter = new SpeedMeter(this);
+        speedMeter.run();
 
         Notification.Builder mBuilder =
                 new Notification.Builder(this)
@@ -47,5 +66,17 @@ public class MainActivity extends Activity {
         // mId allows you to update the notification later on.
         mNotificationManager.notify(1, mBuilder.build());
 
+    }
+
+    @Override
+    public void setSpeedMeterThread(Thread currentThread) {
+        mSpeedMeterThread = currentThread;
+    }
+
+    @Override
+    public void setInternetSpeed(SpeedMeter speedMeter) {
+//        downloadSpeedOutput.setText(Long.toString(downloadSpeed));
+        Message completeMessage = mHandler.obtainMessage(1, speedMeter);
+        completeMessage.sendToTarget();
     }
 }
