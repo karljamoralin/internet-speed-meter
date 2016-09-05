@@ -22,7 +22,7 @@ public class SpeedMeter implements Runnable {
         mMainActivity.setSpeedMeterThread(Thread.currentThread());
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
-//        while(true) {
+        while(true) {
 
             long rxBytesPrevious = TrafficStats.getTotalRxBytes();
             try {
@@ -38,7 +38,7 @@ public class SpeedMeter implements Runnable {
 
             mMainActivity.setInternetSpeed(this);
 
-//        }
+        }
 
     }
 

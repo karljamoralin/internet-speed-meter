@@ -34,8 +34,10 @@ public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpe
             }
         };
 
-        SpeedMeter speedMeter = new SpeedMeter(this);
-        speedMeter.run();
+//        SpeedMeter speedMeter = new SpeedMeter(this);
+//        speedMeter.run();
+
+        new Thread(new SpeedMeter(this)).start();
 
         Notification.Builder mBuilder =
                 new Notification.Builder(this)
