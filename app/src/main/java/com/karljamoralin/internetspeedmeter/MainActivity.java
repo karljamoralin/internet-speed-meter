@@ -7,17 +7,32 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.amulyakhare.textdrawable.TextDrawable;
 
 public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpeedMeterMethods{
 
     private Thread mSpeedMeterThread;
     private Handler mHandler;
     private TextView downloadSpeedOutput;
+    private Notification.Builder mBuilder;
+    private Notification notification;
+    private int mNotificationId = 001;
+    NotificationManager mNotifyMgr;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +46,11 @@ public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpe
             public void handleMessage(Message inputMessage) {
                 SpeedMeter speedMeter = (SpeedMeter) inputMessage.obj;
                 downloadSpeedOutput.setText(Long.toString(speedMeter.getmDownloadSpeedKB()));
+                String downloadSpeed = Long.toString(speedMeter.getmDownloadSpeedKB());
+                Bitmap bitmap = createBitmapFromString(downloadSpeed);
+                Icon icon = Icon.createWithBitmap(bitmap);
+                mBuilder.setSmallIcon(icon);
+                mNotifyMgr.notify(mNotificationId, mBuilder.build());
             }
         };
 
@@ -39,11 +59,25 @@ public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpe
 
         new Thread(new SpeedMeter(this)).start();
 
-        Notification.Builder mBuilder =
-                new Notification.Builder(this)
-                        .setSmallIcon(R.drawable.ic_thumb_up_black_24dp)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
+        ImageView image = (ImageView) findViewById(R.id.image);
+        image.setBackgroundResource(R.drawable.animation_test);
+//        AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
+//        animationDrawable.start();
+
+        Bitmap bitmap = createBitmapFromString("test");
+
+        Icon icon = Icon.createWithBitmap(bitmap);
+
+        mBuilder = new Notification.Builder(this)
+                .setSmallIcon(icon)
+                .setContentTitle("My notification")
+                .setContentText("Hello World!");
+
+        notification = mBuilder.build();
+
+        mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        mNotifyMgr.notify(mNotificationId, mBuilder.build());
 
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
@@ -81,4 +115,23 @@ public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpe
         Message completeMessage = mHandler.obtainMessage(1, speedMeter);
         completeMessage.sendToTarget();
     }
+
+    public Bitmap createBitmapFromString(String string) {
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextSize(50); // size is in pixels
+
+        Rect textBounds = new Rect();
+        paint.getTextBounds(string, 0, string.length(), textBounds);
+
+        Bitmap bitmap = Bitmap.createBitmap(textBounds.width(), textBounds.height(),
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawText(string, -textBounds.left,
+                textBounds.height() - textBounds.bottom, paint);
+
+        return bitmap;
+    }
+
 }
