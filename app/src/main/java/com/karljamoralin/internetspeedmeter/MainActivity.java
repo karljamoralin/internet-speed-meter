@@ -9,21 +9,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.TextDrawable;
-
-public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpeedMeterMethods{
+public class MainActivity extends Activity implements SpeedMeter.SpeedMeterListener {
 
     private Thread mSpeedMeterThread;
     private Handler mHandler;
@@ -42,16 +41,26 @@ public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpe
         downloadSpeedOutput = (TextView) findViewById(R.id.speed);
 
         mHandler = new Handler(Looper.getMainLooper()) {
+
             @Override
             public void handleMessage(Message inputMessage) {
+
+                //instantiate a SpeedMeter class using the current running SpeedMeter thread
                 SpeedMeter speedMeter = (SpeedMeter) inputMessage.obj;
-                downloadSpeedOutput.setText(Long.toString(speedMeter.getmDownloadSpeedKB()));
-                String downloadSpeed = Long.toString(speedMeter.getmDownloadSpeedKB());
-                Bitmap bitmap = createBitmapFromString(downloadSpeed);
+
+                downloadSpeedOutput.setText(speedMeter.getmDownloadSpeedOutput());
+
+                Bitmap bitmap = createBitmapFromString(speedMeter.getmDownloadSpeedOutput(),
+                        speedMeter.getUnits());
+
                 Icon icon = Icon.createWithBitmap(bitmap);
+
                 mBuilder.setSmallIcon(icon);
+
                 mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
             }
+
         };
 
 //        SpeedMeter speedMeter = new SpeedMeter(this);
@@ -61,15 +70,9 @@ public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpe
 
         ImageView image = (ImageView) findViewById(R.id.image);
         image.setBackgroundResource(R.drawable.animation_test);
-//        AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
-//        animationDrawable.start();
-
-        Bitmap bitmap = createBitmapFromString("test");
-
-        Icon icon = Icon.createWithBitmap(bitmap);
 
         mBuilder = new Notification.Builder(this)
-                .setSmallIcon(icon)
+                .setSmallIcon(R.drawable.ic_thumb_up_black_24dp)
                 .setContentTitle("My notification")
                 .setContentText("Hello World!");
 
@@ -104,34 +107,85 @@ public class MainActivity extends Activity implements SpeedMeter.TaskRunnableSpe
 
     }
 
+    public Bitmap createBitmapFromString(String speed, String units) {
+
+        TextPaint speedPaint = new TextPaint();
+        speedPaint.setAntiAlias(true); //anti-aliasing
+        speedPaint.setTextSize(50); // size is in pixels
+
+        //create rect to bind both items
+        Rect textBounds = new Rect();
+
+        if (speed.length() > units.length()) {
+            speedPaint.getTextBounds(speed, 0, speed.length(), textBounds);
+        }
+        else {
+            speedPaint.getTextBounds(units, 0, units.length(), textBounds);
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(textBounds.width() + 10, textBounds.height() * 2,
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+
+//        canvas.drawText(speed, -textBounds.left,
+//                textBounds.height() - textBounds.bottom, speedPaint);
+
+
+        //Try
+        StaticLayout staticLayout = new StaticLayout(speed + " " + units, speedPaint, textBounds.width(), Layout.Alignment.ALIGN_CENTER, 1, 1, false);
+
+        canvas.save();
+
+        //calculate X and Y coordinates - In this case we want to draw the text in the
+        //center of canvas so we calculate
+        //text height and number of lines to move Y coordinate to center.
+        float textHeight = getTextHeight(speed, speedPaint);
+        int numberOfTextLines = staticLayout.getLineCount();
+        float textYCoordinate = textBounds.exactCenterY() -
+                ((numberOfTextLines * textHeight) / 2);
+
+        //text will be drawn from left
+        float textXCoordinate = textBounds.left;
+
+        canvas.translate(textXCoordinate, textYCoordinate);
+
+        staticLayout.draw(canvas);
+
+        canvas.restore();
+
+        /*Paint unitsPaint = new Paint();
+        unitsPaint.setAntiAlias(true);
+        unitsPaint.setTextSize(50);
+
+        Rect unitsTextBounds = new Rect();
+        unitsPaint.getTextBounds(units, 0, units.length(), unitsTextBounds);
+
+        canvas.drawText(units, -unitsTextBounds.left,
+                textBounds.height() - textBounds.bottom - unitsTextBounds.height() - unitsTextBounds.bottom, unitsPaint );*/
+
+        return bitmap;
+    }
+
+    private float getTextHeight(String text, Paint paint) {
+
+        Rect rect = new Rect();
+        paint.getTextBounds(text, 0, text.length(), rect);
+        return rect.height();
+    }
+
     @Override
-    public void setSpeedMeterThread(Thread currentThread) {
+    public void speedMeterThreadCreated(Thread currentThread) {
         mSpeedMeterThread = currentThread;
     }
 
     @Override
-    public void setInternetSpeed(SpeedMeter speedMeter) {
-//        downloadSpeedOutput.setText(Long.toString(downloadSpeed));
+    public void downloadSpeedUpdated(SpeedMeter speedMeter) {
+
         Message completeMessage = mHandler.obtainMessage(1, speedMeter);
         completeMessage.sendToTarget();
-    }
 
-    public Bitmap createBitmapFromString(String string) {
-        Paint paint = new Paint();
-        paint.setAntiAlias(true);
-        paint.setTextSize(50); // size is in pixels
 
-        Rect textBounds = new Rect();
-        paint.getTextBounds(string, 0, string.length(), textBounds);
-
-        Bitmap bitmap = Bitmap.createBitmap(textBounds.width(), textBounds.height(),
-                Bitmap.Config.ARGB_8888);
-
-        Canvas canvas = new Canvas(bitmap);
-        canvas.drawText(string, -textBounds.left,
-                textBounds.height() - textBounds.bottom, paint);
-
-        return bitmap;
     }
 
 }
