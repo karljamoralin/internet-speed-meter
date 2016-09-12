@@ -109,7 +109,45 @@ public class MainActivity extends Activity implements SpeedMeter.SpeedMeterListe
 
     public Bitmap createBitmapFromString(String speed, String units) {
 
-        TextPaint speedPaint = new TextPaint();
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setTextSize(50); // size is in pixels
+        paint.setTextAlign(Paint.Align.CENTER);
+
+        Paint unitsPaint = new Paint();
+        unitsPaint.setAntiAlias(true);
+        unitsPaint.setTextSize(40); // size is in pixels
+        unitsPaint.setTextAlign(Paint.Align.CENTER);
+
+        Rect textBounds = new Rect();
+        paint.getTextBounds(speed, 0, speed.length(), textBounds);
+
+        Rect unitsTextBounds = new Rect();
+        unitsPaint.getTextBounds(units, 0, units.length(), unitsTextBounds);
+
+        int width = (textBounds.width() > unitsTextBounds.width()) ? textBounds.width() : unitsTextBounds.width();
+        int height = (textBounds.height() > unitsTextBounds.height()) ? textBounds.height() : unitsTextBounds.height();
+
+        /*Bitmap bitmap = Bitmap.createBitmap(width + 10, height * 2 + 10,
+                Bitmap.Config.ARGB_8888);*/
+
+        Bitmap bitmap = Bitmap.createBitmap(width + 10, 90,
+                Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        /*canvas.drawText(speed, width/2 + 5,
+                textBounds.height() - textBounds.bottom, paint);
+        canvas.drawText(units,
+                        width/2,
+                        (textBounds.height() - textBounds.bottom)
+                                + (unitsTextBounds.height() - unitsTextBounds.bottom) + 10
+                        , unitsPaint);*/
+        canvas.drawText(speed, width/2 + 5, 50, paint);
+        canvas.drawText(units, width/2, 90, unitsPaint);
+
+        return bitmap;
+
+        /*TextPaint speedPaint = new TextPaint();
         speedPaint.setAntiAlias(true); //anti-aliasing
         speedPaint.setTextSize(50); // size is in pixels
 
@@ -154,7 +192,7 @@ public class MainActivity extends Activity implements SpeedMeter.SpeedMeterListe
 
         canvas.restore();
 
-        /*Paint unitsPaint = new Paint();
+        Paint unitsPaint = new Paint();
         unitsPaint.setAntiAlias(true);
         unitsPaint.setTextSize(50);
 
@@ -162,9 +200,19 @@ public class MainActivity extends Activity implements SpeedMeter.SpeedMeterListe
         unitsPaint.getTextBounds(units, 0, units.length(), unitsTextBounds);
 
         canvas.drawText(units, -unitsTextBounds.left,
-                textBounds.height() - textBounds.bottom - unitsTextBounds.height() - unitsTextBounds.bottom, unitsPaint );*/
+                textBounds.height() - textBounds.bottom - unitsTextBounds.height() - unitsTextBounds.bottom, unitsPaint );
 
-        return bitmap;
+        return bitmap;*/
+
+    }
+
+    void test(String speed, String units) {
+        Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        float textHeight = textPaint.getTextSize();
+
+        Canvas canvas = new Canvas();
+        canvas.drawText("100", 0, 0, textPaint);
+
     }
 
     private float getTextHeight(String text, Paint paint) {

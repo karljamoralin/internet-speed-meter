@@ -2,6 +2,7 @@ package com.karljamoralin.internetspeedmeter;
 
 import android.net.TrafficStats;
 import android.text.StaticLayout;
+import android.util.Log;
 
 /**
  * Created by jamorali on 9/5/2016.
@@ -72,19 +73,22 @@ public class SpeedMeter implements Runnable {
         mDownloadSpeed = mRxBytesCurrent - mRxBytesPrevious;
 
         if (mDownloadSpeed >= 1000000000) {
-            mDownloadSpeedWithDecimals = mDownloadSpeed / 1000000000;
+            mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000000000;
             units = " GB";
         }
         else if (mDownloadSpeed >= 1000000) {
-            mDownloadSpeedWithDecimals = mDownloadSpeed / 1000000;
+            mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000000;
             units = " MB";
+
         }
         else {
-            mDownloadSpeedWithDecimals = mDownloadSpeed / 1000;
+            mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000;
             units = " KB";
         }
 
-        if (!units.equals(" KB") && mDownloadSpeed < 100) {
+        Log.d("speed", Float.toString(mDownloadSpeedWithDecimals));
+
+        if (!units.equals(" KB") && mDownloadSpeedWithDecimals < 100) {
             mDownloadSpeedOutput = String.format("%.1f", mDownloadSpeedWithDecimals);
         }
         else {
