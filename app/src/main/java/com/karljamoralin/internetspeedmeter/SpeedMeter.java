@@ -1,8 +1,6 @@
 package com.karljamoralin.internetspeedmeter;
 
 import android.net.TrafficStats;
-import android.text.StaticLayout;
-import android.util.Log;
 
 /**
  * Created by jamorali on 9/5/2016.
@@ -15,26 +13,15 @@ public class SpeedMeter implements Runnable {
     private long mRxBytesPrevious;
     private long mRxBytesCurrent;
     private long mDownloadSpeed;
-    private StaticLayout mOutput;
+    private String mUnits;
 
-    public StaticLayout getmOutput() {
-        return mOutput;
+    public String getmUnits() {
+        return mUnits;
     }
 
-    public void setmOutput(StaticLayout mOutput) {
-        this.mOutput = mOutput;
+    public void setmUnits(String mUnits) {
+        this.mUnits = mUnits;
     }
-
-    public String getUnits() {
-        return units;
-    }
-
-    public void setUnits(String units) {
-        this.units = units;
-    }
-
-    private String units;
-
 
     public SpeedMeter(SpeedMeterListener mainActivity) {
         mSpeedMeterListener = mainActivity;
@@ -45,12 +32,12 @@ public class SpeedMeter implements Runnable {
     public void run() {
 
         mSpeedMeterListener.speedMeterThreadCreated(Thread.currentThread());
+
         android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
         while(true) {
 
             getDownloadSpeed();
-
             mSpeedMeterListener.downloadSpeedUpdated(this);
 
         }
@@ -74,21 +61,19 @@ public class SpeedMeter implements Runnable {
 
         if (mDownloadSpeed >= 1000000000) {
             mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000000000;
-            units = " GB";
+            mUnits = " GB";
         }
         else if (mDownloadSpeed >= 1000000) {
             mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000000;
-            units = " MB";
+            mUnits = " MB";
 
         }
         else {
             mDownloadSpeedWithDecimals = (float) mDownloadSpeed / (float) 1000;
-            units = " KB";
+            mUnits = " KB";
         }
 
-        Log.d("speed", Float.toString(mDownloadSpeedWithDecimals));
-
-        if (!units.equals(" KB") && mDownloadSpeedWithDecimals < 100) {
+        if (!mUnits.equals(" KB") && mDownloadSpeedWithDecimals < 100) {
             mDownloadSpeedOutput = String.format("%.1f", mDownloadSpeedWithDecimals);
         }
         else {
