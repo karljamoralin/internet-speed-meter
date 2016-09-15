@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,24 +11,10 @@
     tools:context="com.karljamoralin.internetspeedmeter.MainActivity">
 
     <Switch
+        android:id="@+id/meter_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enable widget"
-        android:id="@+id/switch1"
-        android:textAppearance="@android:style/TextAppearance.Material.Large"
-        android:layout_alignParentTop="true"/>
-
-    <TextView
-        android:id="@+id/speed"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@android:style/TextAppearance.Material.Large">
-
-    </TextView>
-
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:text="@string/enable_speed_meter"
+        android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
 </LinearLayout>

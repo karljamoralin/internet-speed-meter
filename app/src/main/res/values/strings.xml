@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Internet Speed Meter</string>
+    <string name="enable_speed_meter">Enable Speed Meter</string>
 </resources>
