@@ -74,7 +74,7 @@ public class ISMService extends IntentService {
         };
 
         mBuilder = new Notification.Builder(this);
-        mBuilder.setSmallIcon(Icon.createWithBitmap(createBitmapFromString("0", "KB")));
+        mBuilder.setSmallIcon(Icon.createWithBitmap(createBitmapFromString("0", " KB")));
         mBuilder.setContentTitle("");
         mBuilder.setVisibility(Notification.VISIBILITY_SECRET);
         mBuilder.setOngoing(true);
@@ -82,8 +82,7 @@ public class ISMService extends IntentService {
         /*Creates a special PendingIntent so that the app will open when the notification window
         is tapped*/
         Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent
-                .FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent
                 .FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pendingIntent);
@@ -91,6 +90,8 @@ public class ISMService extends IntentService {
 
         mNotifyMgr = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
+        startForeground(mNotificationId, mBuilder.build());
 
     }
 
