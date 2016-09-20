@@ -3,6 +3,7 @@ package com.karljamoralin.internetspeedmeter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 
 /**
@@ -47,6 +48,17 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Intent ismService = new Intent(context, ISMService.class);
-        context.startService(ismService);
+
+        /*Check first if meter is disabled, in which you don't start the service*/
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string
+                .shared_pref),
+                Context.MODE_PRIVATE);
+
+        int state = sharedPref.getInt(context.getString(R.string.meter_state), 0);
+
+        if (state == 1) {
+            context.startService(ismService);
+        }
+
     }
 }

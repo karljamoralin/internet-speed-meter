@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -38,9 +39,15 @@ public class ISMService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+        /*Check first if meter is disabled, in which you don't start the service*/
+        SharedPreferences sharedPref = this.getSharedPreferences(getString(R.string.shared_pref),
+                Context.MODE_PRIVATE);
+
+        int state = sharedPref.getInt(getString(R.string.meter_state), 0);
+
         initializeNotification();
 
-        while (!mDestroyed) {
+        while (!mDestroyed && state == 1) {
 
             getDownloadSpeed();
 

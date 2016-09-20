@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Internet Speed Meter</string>
     <string name="enable_speed_meter">Enable Speed Meter</string>
+    <string name="shared_pref">com.karljamoralin.internetspeedmeter.PREFERENCE_FILE_KEY</string>
+    <string name="meter_state">meterState</string>
 </resources>
