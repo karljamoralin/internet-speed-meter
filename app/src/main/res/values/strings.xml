@@ -3,4 +3,5 @@
     <string name="enable_speed_meter">Enable Speed Meter</string>
     <string name="shared_pref">com.karljamoralin.internetspeedmeter.PREFERENCE_FILE_KEY</string>
     <string name="meter_state">meterState</string>
+    <string name="tip">If you like this app, feel free to buy me a coffee =)</string>
 </resources>
